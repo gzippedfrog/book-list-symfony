@@ -19,16 +19,16 @@ class Book
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $isbn = null;
 
     #[ORM\Column]
     private ?int $pageCount = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $publishedDate = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $thumbnailUrl = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
