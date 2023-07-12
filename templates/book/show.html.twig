@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Book Info{% endblock %}
+
+{% block body %}
+    <div class="book-card">
+        <h4>{{ book.title }}</h4>
+        <p>{{ book.shortDescription }}</p>
+        <p>Author(s): {{ book.authors|join(', ') }}</p>
+        <p>Pages: {{ book.pageCount }}</p>
+        <p>ISBN: {{ book.isbn }}</p>
+        <p>Published date: {{ book.publishedDate|date('m/d/Y') }}</p>
+        <img src="{{ book.thumbnailUrl }}" alt="cover">
+    </div>
+{% endblock %}
