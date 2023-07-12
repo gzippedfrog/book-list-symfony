@@ -3,6 +3,7 @@
 {% block title %}Books{% endblock %}
 
 {% block body %}
+    <h3>There are {{ books|length }} books</h3>
     {% for book in books %}
         <div class="book-card">
             <h4>{{ book.title }}</h4>
@@ -14,4 +15,10 @@
             <img src="{{ book.thumbnailUrl }}" alt="cover">
         </div>
     {% endfor %}
+    {% if previous >= 1 %}
+        <a href="{{ path('books', { page: previous }) }}">Previous</a>
+    {% endif %}
+    {% if next < books|length %}
+        <a href="{{ path('books', { page: next }) }}">Next</a>
+    {% endif %}
 {% endblock %}
