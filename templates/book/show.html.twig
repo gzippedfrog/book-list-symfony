@@ -1,15 +1,41 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Book Info{% endblock %}
+{% block title %}Book info{% endblock %}
 
 {% block body %}
-    <div class="book-card">
+    <a href="{{ referer }}">Go to previous page</a>
+
+    <div>
         <h4>{{ book.title }}</h4>
-        <p>{{ book.shortDescription }}</p>
-        <p>Author(s): {{ book.authors|join(', ') }}</p>
-        <p>Pages: {{ book.pageCount }}</p>
-        <p>ISBN: {{ book.isbn }}</p>
-        <p>Published date: {{ book.publishedDate|date('m/d/Y') }}</p>
-        <img src="{{ book.thumbnailUrl }}" alt="cover">
+
+        {% if book.thumbnailUrl %}
+            <img src="{{ book.thumbnailUrl }}" alt="thumbnail">
+        {% endif %}
+
+        {% if book.authors|length > 0 %}
+            <p>Author(s): {{ book.authors|join(', ') }}</p>
+        {% endif %}
+
+        {% if book.longDescription %}
+            <p>{{ book.longDescription }}</p>
+        {% endif %}
+
+        {% if book.pageCount %}
+            <p>Pages: {{ book.pageCount }}</p>
+        {% endif %}
+
+        {% if book.isbn %}
+            <p>ISBN: {{ book.isbn }}</p>
+        {% endif %}
+
+        {% if book.publishedDate %}
+            <p>Published date: {{ book.publishedDate|date('d.m.Y') }}</p>
+        {% endif %}
+
+        <p>Categories:
+            {% for category in book.categories %}
+                <a href="{{ path('category', { id: category.id }) }}">{{ category.name }}</a>
+            {% endfor %}
+        </p>
     </div>
 {% endblock %}

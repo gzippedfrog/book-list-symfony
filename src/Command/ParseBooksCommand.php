@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Book;
+use App\Entity\Category;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -11,11 +12,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
-use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
-use Symfony\Component\Serializer\Serializer;
 
 #[AsCommand(
     name: 'app:parse-books',
@@ -43,33 +39,55 @@ class ParseBooksCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $arg1 = $input->getArgument('source');
+        $source = $input->getArgument('source');
 
-        if ($arg1) {
-            $file = file_get_contents($arg1);
+        if ($source) {
+            $jsonData = json_decode(file_get_contents($source), true);
+            $em = $this->entityManager;
 
-            $defaultContext = [
-                AbstractNormalizer::CALLBACKS => [
-                    'publishedDate' => fn($innerObject): string => $innerObject['$date'],
-                ],
-            ];
+            foreach ($jsonData as $bookData) {
+                $book = $em->getRepository(Book::class)->findOneBy(['title' => $bookData['title']]);
 
-            $serializer = new Serializer(
-                [new GetSetMethodNormalizer(), new ArrayDenormalizer()],
-                [new JsonEncoder()]
-            );
+                if (!$book) {
+                    $book = new Book();
+                    $book->setTitle($bookData['title']);
+                    $book->setIsbn($bookData['isbn'] ?? null);
 
-            $books = $serializer->deserialize($file, Book::class . '[]', 'json', $defaultContext);
+                    $date = $bookData['publishedDate']['$date'] ?? null;
+                    $book->setPublishedDate($date ? new \DateTime($date) : null);
 
-            foreach ($books as $book) {
-                $this->entityManager->persist($book);
+                    $book->setThumbnailUrl($bookData['thumbnailUrl'] ?? null);
+                    $book->setAuthors($bookData['authors']);
+                    $book->setStatus($bookData['status']);
+                    $book->setShortDescription($bookData['shortDescription'] ?? null);
+                    $book->setLongDescription($bookData['longDescription'] ?? null);
+                    $book->setPageCount($bookData['pageCount'] > 0 ? $bookData['pageCount'] : null);
+
+                    $this->entityManager->persist($book);
+                }
+
+                foreach ($bookData['categories'] as $categoryName) {
+                    $category = $em->getRepository(Category::class)->findOneBy(['name' => $categoryName]);
+
+                    if (!$category) {
+                        $category = new Category();
+                        $category->setName($categoryName);
+
+                        $this->entityManager->persist($category);
+
+                    }
+
+                    if (!$category->getBooks()->contains($book)) {
+                        $category->addBook($book);
+                    }
+                }
+
+                $this->entityManager->flush();
+
             }
-
-            $this->entityManager->flush();
-
             return Command::SUCCESS;
-        }
 
+        }
         return Command::FAILURE;
     }
 }

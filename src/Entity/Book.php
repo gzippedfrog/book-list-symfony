@@ -22,11 +22,11 @@ class Book
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $isbn = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $pageCount = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $publishedDate = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $publishedDate = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $thumbnailUrl = null;
@@ -73,7 +73,7 @@ class Book
         return $this->isbn;
     }
 
-    public function setIsbn(string $isbn): static
+    public function setIsbn(?string $isbn): static
     {
         $this->isbn = $isbn;
 
@@ -85,21 +85,9 @@ class Book
         return $this->pageCount;
     }
 
-    public function setPageCount(int $pageCount): static
+    public function setPageCount(?int $pageCount): static
     {
         $this->pageCount = $pageCount;
-
-        return $this;
-    }
-
-    public function getPublishedDate(): ?string
-    {
-        return $this->publishedDate;
-    }
-
-    public function setPublishedDate(string $publishedDate): static
-    {
-        $this->publishedDate = $publishedDate;
 
         return $this;
     }
@@ -109,7 +97,7 @@ class Book
         return $this->thumbnailUrl;
     }
 
-    public function setThumbnailUrl(string $thumbnailUrl): static
+    public function setThumbnailUrl(?string $thumbnailUrl): static
     {
         $this->thumbnailUrl = $thumbnailUrl;
 
@@ -133,7 +121,7 @@ class Book
         return $this->longDescription;
     }
 
-    public function setLongDescription(string $longDescription): static
+    public function setLongDescription(?string $longDescription): static
     {
         $this->longDescription = $longDescription;
 
@@ -184,6 +172,18 @@ class Book
     public function removeCategory(Category $category): static
     {
         $this->categories->removeElement($category);
+
+        return $this;
+    }
+
+    public function getPublishedDate(): ?\DateTimeInterface
+    {
+        return $this->publishedDate;
+    }
+
+    public function setPublishedDate(?\DateTimeInterface $publishedDate): static
+    {
+        $this->publishedDate = $publishedDate;
 
         return $this;
     }
