@@ -1,11 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Books{% endblock %}
+{% block title %}Categories{% endblock %}
 
 {% block body %}
-    <ul>
-        {% for category in categories %}
-            <li><a href="{{ path('category', { id: category.id }) }}">{{ category }}</a></li>
-        {% endfor %}
-    </ul>
+    {% if categories %}
+        <ul>
+            {% for category in categories %}
+                <li><a href="{{ path('category', { id: category.id }) }}">{{ category }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <h2>No books added yet</h2>
+    {% endif %}
 {% endblock %}

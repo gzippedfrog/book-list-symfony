@@ -7,24 +7,26 @@
 
     <h4>{{ category }}</h4>
 
-    <ul>
-        {% for book in books %}
-            <li>
-                <a href="{{ path('book', {id: book.id }) }}">{{ book.title }}</a>
-                {% if book.authors|length > 0 %}
-                    <span>Author(s): {{ book.authors|join(', ') }}</span>
-                {% endif %}
-                {% if book.shortDescription %}
-                    <p>{{ book.shortDescription }}</p>
-                {% else %}
-                    <p>No short description.</p>
-                {% endif %}
+    {% if books %}
+        <ul>
+            {% for book in books %}
+                <li>
+                    <a href="{{ path('book', {id: book.id }) }}">{{ book.title }}</a>
+                    {% if book.authors|length > 0 %}
+                        <span>Author(s): {{ book.authors|join(', ') }}</span>
+                    {% endif %}
+                    {% if book.shortDescription %}
+                        <p>{{ book.shortDescription }}</p>
+                    {% else %}
+                        <p>No short description.</p>
+                    {% endif %}
 
-            </li>
-            <br>
-            <br>
-        {% endfor %}
-    </ul>
+                </li>
+                <br>
+                <br>
+            {% endfor %}
+        </ul>
+    {% endif %}
 
     {% if previous >= 1 %}
         <a href="{{ path('category', { id: category.id ,page: previous }) }}">Previous</a>
